@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, g
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -16,7 +16,11 @@ db = SQLAlchemy(app)
 @app.route('/index')
 @app.route('/')
 def hello_flask():
-    return 'Hello Flask !'
+    return 'Hello Flask !' + g.string
+
+@app.before_request
+def setup_g():
+    g.string = "<br> This code ran before any request"
 
 @app.route('/new')
 def query_string(greeting='hello'):
@@ -51,6 +55,13 @@ def add_two_number(num1,num2):
 def use_html_template():
     return render_template('hello.html')
 
+
+# SESSION OBJECT
+@app.route('/session')
+def session_data():
+    if 'name' not in session:
+        session['name'] = 'harry'
+    return render_template('session.html', session=session, name=session['name'])
 
 @app.route('/watch')
 def top_movies():
